@@ -161,3 +161,7 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+## RTK (Rust Token Killer)
+
+Use `.\rtk.cmd` to prefix commands for token-optimized output (60-90% savings). Works with: git, gh, ls, grep, find, diff, err, npm, npx, etc. Always safe — passes through unchanged if no filter exists.

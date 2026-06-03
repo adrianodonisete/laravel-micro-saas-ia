@@ -1,0 +1,74 @@
+# Project-local RTK filters for next-js-english-teacher
+# Docs: https://github.com/rtk-ai/rtk#custom-filters
+# Trust once per machine: rtk trust
+# Validate: rtk verify
+
+schema_version = 1
+
+[filters.npm-run]
+description = "Compact npm run output (dev, build, lint, start)"
+match_command = "^npm run (dev|build|lint|start)(\\s|$)"
+strip_ansi = true
+strip_lines_matching = [
+  "^\\s*$",
+  "^> english-teacher-temp@",
+  "^> next ",
+  "^> eslint",
+]
+max_lines = 60
+
+[filters.next-dev]
+description = "Next.js dev server startup noise"
+match_command = "^next dev(\\s|$)"
+strip_ansi = true
+strip_lines_matching = [
+  "^\\s*$",
+  "^- Local:",
+  "^- Network:",
+  "^✓ Starting",
+  "^✓ Ready in",
+  "^○ Compiling",
+  "^⚠ Fast Refresh",
+  "^\\s+Next\\.js",
+]
+max_lines = 40
+on_empty = "next dev: running"
+
+[filters.curl-local]
+description = "Local API curl — keep status and body, drop progress noise"
+match_command = "^curl\\s+.*(localhost|127\\.0\\.0\\.1|:3000)"
+strip_ansi = true
+strip_lines_matching = [
+  "^\\s*$",
+  "^  % Total",
+  "^\\s+Dload  Upload",
+  "^\\s+\\d+\\s+\\d+",
+]
+max_lines = 80
+
+[filters.gh-pr]
+description = "GitHub CLI PR/issue list — compact rows"
+match_command = "^gh (pr|issue) (list|status|view)(\\s|$)"
+strip_ansi = true
+strip_lines_matching = ["^\\s*$"]
+max_lines = 30
+
+[[tests.npm-run]]
+name = "strips npm script banner"
+input = "> english-teacher-temp@0.1.0 dev\n> next dev\n\n✓ Ready"
+expected = "✓ Ready"
+
+[[tests.next-dev]]
+name = "keeps errors, drops ready banner"
+input = "- Local: http://localhost:3000\n⨯ Error: missing env\nFailed to compile"
+expected = "⨯ Error: missing env\nFailed to compile"
+
+[[tests.curl-local]]
+name = "drops curl progress bar"
+input = "  % Total    % Received\nHTTP/1.1 200 OK\n{\"ok\":true}"
+expected = "HTTP/1.1 200 OK\n{\"ok\":true}"
+
+[[tests.gh-pr]]
+name = "caps blank lines"
+input = "#42  Fix login\n\n#41  Add nav"
+expected = "#42  Fix login\n#41  Add nav"

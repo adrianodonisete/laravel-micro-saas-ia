@@ -161,3 +161,142 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - Do NOT delete tests without approval.
 
 </laravel-boost-guidelines>
+
+<!-- rtk-instructions v2 -->
+# RTK (Rust Token Killer) - Token-Optimized Commands
+
+## Golden Rule
+
+**Always prefix commands with `.\rtk.cmd`** (project-local WSL bridge). If RTK has a dedicated filter, it uses it. If not, it passes through unchanged. This means RTK is always safe to use.
+
+**Important**: Even in command chains with PowerShell semicolons, use RTK:
+```powershell
+# ❌ Wrong
+git add .; if ($?) { git commit -m "msg" }; if ($?) { git push }
+
+# ✅ Correct
+.\rtk.cmd git add .; if ($?) { .\rtk.cmd git commit -m "msg" }; if ($?) { .\rtk.cmd git push }
+```
+
+## RTK Commands by Workflow
+
+### Build & Compile (80-90% savings)
+```bash
+.\rtk.cmd cargo build         # Cargo build output
+.\rtk.cmd cargo check         # Cargo check output
+.\rtk.cmd cargo clippy        # Clippy warnings grouped by file (80%)
+.\rtk.cmd tsc                 # TypeScript errors grouped by file/code (83%)
+.\rtk.cmd lint                # ESLint/Biome violations grouped (84%)
+.\rtk.cmd prettier --check    # Files needing format only (70%)
+.\rtk.cmd next build          # Next.js build with route metrics (87%)
+```
+
+### Test (60-99% savings)
+```bash
+.\rtk.cmd cargo test          # Cargo test failures only (90%)
+.\rtk.cmd go test             # Go test failures only (90%)
+.\rtk.cmd jest                # Jest failures only (99.5%)
+.\rtk.cmd vitest              # Vitest failures only (99.5%)
+.\rtk.cmd playwright test     # Playwright failures only (94%)
+.\rtk.cmd pytest              # Python test failures only (90%)
+.\rtk.cmd rake test           # Ruby test failures only (90%)
+.\rtk.cmd rspec               # RSpec test failures only (60%)
+.\rtk.cmd test <cmd>          # Generic test wrapper - failures only
+```
+
+### Git (59-80% savings)
+```bash
+.\rtk.cmd git status          # Compact status
+.\rtk.cmd git log             # Compact log (works with all git flags)
+.\rtk.cmd git diff            # Compact diff (80%)
+.\rtk.cmd git show            # Compact show (80%)
+.\rtk.cmd git add             # Ultra-compact confirmations (59%)
+.\rtk.cmd git commit          # Ultra-compact confirmations (59%)
+.\rtk.cmd git push            # Ultra-compact confirmations
+.\rtk.cmd git pull            # Ultra-compact confirmations
+.\rtk.cmd git branch          # Compact branch list
+.\rtk.cmd git fetch           # Compact fetch
+.\rtk.cmd git stash           # Compact stash
+.\rtk.cmd git worktree        # Compact worktree
+```
+
+Note: Git passthrough works for ALL subcommands, even those not explicitly listed.
+
+### GitHub (26-87% savings)
+```bash
+.\rtk.cmd gh pr view <num>    # Compact PR view (87%)
+.\rtk.cmd gh pr checks        # Compact PR checks (79%)
+.\rtk.cmd gh run list         # Compact workflow runs (82%)
+.\rtk.cmd gh issue list       # Compact issue list (80%)
+.\rtk.cmd gh api              # Compact API responses (26%)
+```
+
+### JavaScript/TypeScript Tooling (70-90% savings)
+```bash
+.\rtk.cmd pnpm list           # Compact dependency tree (70%)
+.\rtk.cmd pnpm outdated       # Compact outdated packages (80%)
+.\rtk.cmd pnpm install        # Compact install output (90%)
+.\rtk.cmd npm run <script>    # Compact npm script output
+.\rtk.cmd npx <cmd>           # Compact npx command output
+.\rtk.cmd prisma              # Prisma without ASCII art (88%)
+```
+
+### Files & Search (60-75% savings)
+```bash
+.\rtk.cmd ls <path>           # Tree format, compact (65%)
+.\rtk.cmd read <file>         # Code reading with filtering (60%)
+.\rtk.cmd grep <pattern>      # Search grouped by file (75%). Format flags (-c, -l, -L, -o, -Z) run raw.
+.\rtk.cmd find <pattern>      # Find grouped by directory (70%)
+```
+
+### Analysis & Debug (70-90% savings)
+```bash
+.\rtk.cmd err <cmd>           # Filter errors only from any command
+.\rtk.cmd log <file>          # Deduplicated logs with counts
+.\rtk.cmd json <file>         # JSON structure without values
+.\rtk.cmd deps                # Dependency overview
+.\rtk.cmd env                 # Environment variables compact
+.\rtk.cmd summary <cmd>       # Smart summary of command output
+.\rtk.cmd diff                # Ultra-compact diffs
+```
+
+### Infrastructure (85% savings)
+```bash
+.\rtk.cmd docker ps           # Compact container list
+.\rtk.cmd docker images       # Compact image list
+.\rtk.cmd docker logs <c>     # Deduplicated logs
+.\rtk.cmd kubectl get         # Compact resource list
+.\rtk.cmd kubectl logs        # Deduplicated pod logs
+```
+
+### Network (65-70% savings)
+```bash
+.\rtk.cmd curl <url>          # Compact HTTP responses (70%)
+.\rtk.cmd wget <url>          # Compact download output (65%)
+```
+
+### Meta Commands
+```bash
+.\rtk.cmd gain                # View token savings statistics
+.\rtk.cmd gain --history      # View command history with savings
+.\rtk.cmd discover            # Analyze Claude Code sessions for missed RTK usage
+.\rtk.cmd proxy <cmd>         # Run command without filtering (for debugging)
+.\rtk.cmd init                # Add RTK instructions to CLAUDE.md
+.\rtk.cmd init --global       # Add RTK to ~/.claude/CLAUDE.md
+```
+
+## Token Savings Overview
+
+| Category | Commands | Typical Savings |
+|----------|----------|-----------------|
+| Tests | vitest, playwright, cargo test | 90-99% |
+| Build | next, tsc, lint, prettier | 70-87% |
+| Git | status, log, diff, add, commit | 59-80% |
+| GitHub | gh pr, gh run, gh issue | 26-87% |
+| Package Managers | pnpm, npm, npx | 70-90% |
+| Files | ls, read, grep, find | 60-75% |
+| Infrastructure | docker, kubectl | 85% |
+| Network | curl, wget | 65-70% |
+
+Overall average: **60-90% token reduction** on common development operations.
+<!-- /rtk-instructions -->

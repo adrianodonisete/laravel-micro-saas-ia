@@ -1,0 +1,1 @@
+@wsl ~/.local/bin/rtk %*
